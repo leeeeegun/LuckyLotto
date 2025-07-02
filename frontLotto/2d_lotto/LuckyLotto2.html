@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>행운 로또 머신</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .lotto-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .ball {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #f39c12;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      animation: bounceRoll 1s ease-in-out forwards;
+    }
+
+    @keyframes bounceRoll {
+      0% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      30% {
+        transform: translateY(-30px) rotate(360deg);
+      }
+      100% {
+        transform: translateY(0px) rotate(720deg);
+      }
+    }
+  </style>
+</head>
+<body class="text-center">
+  <div class="jumbotron">
+    <h1 class="display-4">행운 로또 머신</h1>
+    <p class="lead">당신의 행운 볼은 과연!?</p>
+    <button class="btn btn-primary btn-lg" onclick="drawBalls()">번호 추첨하기</button>
+    <button class="btn btn-danger btn-lg" onclick="eraseHistory()">기록 지우기</button>
+  </div>
+
+  <div id="ballSection" class="lotto-container"></div>
+  <div id="historySection" class="alert alert-secondary" role="alert"></div>
+
+  <script>
+    function getRandomNumbers(count, max) {
+      const numbers = new Set();
+      while (numbers.size < count) {
+        numbers.add(Math.floor(Math.random() * max) + 1);
+      }
+      return Array.from(numbers).sort((a, b) => a - b);
+    }
+
+    function drawBalls() {
+      const ballSection = document.getElementById("ballSection");
+      ballSection.innerHTML = ''; // reset
+      const history = document.getElementById("historySection");
+
+      const numbers = getRandomNumbers(6, 45);
+      const bonus = getRandomNumbers(1, 45).find(n => !numbers.includes(n));
+
+      numbers.forEach((num, i) => {
+        setTimeout(() => {
+          const ball = document.createElement("div");
+          ball.className = "ball";
+          ball.textContent = num;
+          ballSection.appendChild(ball);
+        }, i * 300);
+      });
+
+      // 보너스 번호 표시
+      setTimeout(() => {
+        const ball = document.createElement("div");
+        ball.className = "ball";
+        ball.style.backgroundColor = "#3498db"; // 보너스는 파란색
+        ball.textContent = bonus;
+        ballSection.appendChild(ball);
+
+        // 기록 저장
+        const all = [...numbers, `보너스:${bonus}`];
+        history.innerHTML += `<div>추첨 번호: ${all.join(', ')}</div>`;
+      }, 6 * 300);
+    }
+
+    function eraseHistory() {
+      document.getElementById("historySection").innerHTML = '';
+      document.getElementById("ballSection").innerHTML = '';
+    }
+  </script>
+</body>
+</html>
